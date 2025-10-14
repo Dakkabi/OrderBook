@@ -16,7 +16,7 @@ public class Order {
    * @param quantity The quantity the agent wants to sell / buy.
    * @param price The amount the agent would sell / buy for.
    */
-  public Order(Side side, int quantity, int price) {
+  public Order(Side side, int quantity, double price) {
     if (quantity <= 0) {
       throw new IllegalArgumentException("quantity must be greater than 0");
     }
