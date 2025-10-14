@@ -7,7 +7,7 @@ public class Order {
   private int id;
   final Side side;
   final int quantity;
-  final int price;
+  final double price;
 
   /**
    * Public Order constructor, id should be manually set by the server.
@@ -42,7 +42,7 @@ public class Order {
     return quantity;
   }
 
-  public int getPrice() {
+  public double getPrice() {
     return price;
   }
 }
