@@ -21,8 +21,8 @@ public class OrderBook {
   public OrderBook() {
     Comparator<Order> getSmallerPrice = Comparator.comparingDouble(Order::getPrice);
 
-    bidOrders = new PriorityQueue<>(getSmallerPrice);
-    askOrders = new PriorityQueue<>(getSmallerPrice.reversed());
+    bidOrders = new PriorityQueue<>(getSmallerPrice.reversed());
+    askOrders = new PriorityQueue<>(getSmallerPrice);
   }
 
   /**
