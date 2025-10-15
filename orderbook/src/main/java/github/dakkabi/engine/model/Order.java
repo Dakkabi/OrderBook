@@ -1,13 +1,16 @@
 package github.dakkabi.engine.model;
 
+import java.time.Instant;
+
 /**
  * Class representing an Order to be entered into the OrderBook.
  */
 public class Order {
   private int id;
-  final Side side;
-  final int quantity;
-  final double price;
+  private final Side side;
+  private final int quantity;
+  private final double price;
+  private final long timestamp;
 
   /**
    * Public Order constructor, id should be manually set by the server.
@@ -24,6 +27,7 @@ public class Order {
     this.side = side;
     this.quantity = quantity;
     this.price = price;
+    this.timestamp = Instant.now().getNano();
   }
 
   public int getId() {
@@ -44,5 +48,9 @@ public class Order {
 
   public double getPrice() {
     return price;
+  }
+
+  public long getTimestamp() {
+    return timestamp;
   }
 }
