@@ -11,6 +11,7 @@ import github.dakkabi.engine.model.Type;
  */
 public class MatchingEngine {
   private final OrderBook orderBook;
+  private final MatchingEngineLogger logger;
 
   // Real-world order books rarely change algorithm during run-time.
   // So keeping this final is fine.
@@ -30,6 +31,7 @@ public class MatchingEngine {
    */
   public MatchingEngine(OrderBook orderBook,  MatchingAlgorithm algorithm) {
     this.orderBook = orderBook;
+    this.logger = new MatchingEngineLogger();
 
     if (algorithm.equals(MatchingAlgorithm.PRORATA)) {
       throw new UnsupportedOperationException("PRO-RATA is not currently supported");
@@ -45,7 +47,7 @@ public class MatchingEngine {
    * @param order The new order instance.
    * @return The updated order instance.
    */
-  public Order onOrderAdded(Order order) {
+  public Order submitOrder(Order order) {
     if (matchOrder(order)) {
       // Order was able to be immediately completed.
       return order;
@@ -60,6 +62,7 @@ public class MatchingEngine {
       case Type.LIMIT:
         // Limit orders are placed onto the Order Book
         orderBook.addOrder(order);
+        logger.onOrderAdded(order);
         break;
 
       default:
