@@ -10,6 +10,7 @@ public class Order {
   private final Side side;
   private final Type type;
   private final int quantity;
+  private int remainingQuantity;
   private final double price;
   private final long timestamp;
 
@@ -28,6 +29,7 @@ public class Order {
     this.side = side;
     this.type = type;
     this.quantity = quantity;
+    this.remainingQuantity = quantity;
     this.price = price;
     this.timestamp = Instant.now().getNano();
   }
@@ -50,6 +52,14 @@ public class Order {
 
   public int getQuantity() {
     return quantity;
+  }
+
+  public int getRemainingQuantity() {
+    return remainingQuantity;
+  }
+
+  public void setRemainingQuantity(int remainingQuantity) {
+    this.remainingQuantity = remainingQuantity;
   }
 
   public double getPrice() {
