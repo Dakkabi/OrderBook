@@ -1,5 +1,6 @@
 package github.dakkabi.engine.service;
 
+import github.dakkabi.engine.model.MatchingAlgorithm;
 import github.dakkabi.engine.model.OrderBook;
 
 /**
@@ -8,6 +9,7 @@ import github.dakkabi.engine.model.OrderBook;
  */
 public class MatchingEngine {
   private final OrderBook orderBook;
+  private final MatchingAlgorithm algorithm = MatchingAlgorithm.FIFO;
 
   /**
    * Public no-args constructor, will initialise its own OrderBook attribute.
