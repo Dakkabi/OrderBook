@@ -55,11 +55,11 @@ public class MatchingEngine {
 
     // Unfilled
     switch (order.getType()) {
-      case Type.MARKET:
+      case MARKET:
         // Market Orders get cancelled if not filled.
         break;
 
-      case Type.LIMIT:
+      case LIMIT:
         // Limit orders are placed onto the Order Book
         orderBook.addOrder(order);
         logger.onOrderAdded(order);
