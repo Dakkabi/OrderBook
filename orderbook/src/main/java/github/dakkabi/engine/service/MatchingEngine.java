@@ -9,13 +9,16 @@ import github.dakkabi.engine.model.OrderBook;
  */
 public class MatchingEngine {
   private final OrderBook orderBook;
-  private final MatchingAlgorithm algorithm = MatchingAlgorithm.FIFO;
+
+  // Real-world order books rarely change algorithm during run-time.
+  // So keeping this final is fine.
+  private final MatchingAlgorithm algorithm;
 
   /**
-   * Public no-args constructor, will initialise its own OrderBook attribute.
+   * Public algorithm-only argument, will initialise its own new Order Book.
    */
-  public MatchingEngine() {
-    orderBook = new OrderBook();
+  public MatchingEngine(MatchingAlgorithm algorithm) {
+    this(new OrderBook(),  algorithm);
   }
 
   /**
@@ -23,11 +26,16 @@ public class MatchingEngine {
    *
    * @param orderBook The order book to manage.
    */
-  public MatchingEngine(OrderBook orderBook) {
+  public MatchingEngine(OrderBook orderBook,  MatchingAlgorithm algorithm) {
     this.orderBook = orderBook;
+    this.algorithm = algorithm;
   }
 
   public OrderBook getOrderBook() {
     return orderBook;
+  }
+
+  public MatchingAlgorithm getAlgorithm() {
+    return algorithm;
   }
 }
