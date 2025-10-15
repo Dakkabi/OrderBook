@@ -26,6 +26,7 @@ public class Order {
       throw new IllegalArgumentException("quantity must be greater than 0");
     }
 
+    this.id = -1;
     this.side = side;
     this.type = type;
     this.initialQuantity = initialQuantity;
