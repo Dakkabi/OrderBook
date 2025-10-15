@@ -43,6 +43,10 @@ public class OrderBook {
     return order;
   }
 
+  public boolean isEmpty(Side side) {
+    return side.equals(Side.ASK) ?  askOrders.isEmpty() : bidOrders.isEmpty();
+  }
+
   // Level 1 Order Book data
   public Order getBestBid() {
     return bidOrders.peek();
