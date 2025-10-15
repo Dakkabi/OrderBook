@@ -1,9 +1,6 @@
 package github.dakkabi;
 
-import github.dakkabi.engine.model.MatchingAlgorithm;
-import github.dakkabi.engine.model.Order;
-import github.dakkabi.engine.model.Side;
-import github.dakkabi.engine.model.Type;
+import github.dakkabi.engine.model.*;
 import github.dakkabi.engine.service.MatchingEngine;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,7 +11,12 @@ import java.io.InputStreamReader;
 public class Server {
   private final MatchingEngine matchingEngine = new MatchingEngine(MatchingAlgorithm.FIFO);
 
-  static void main(String[] args) {
+  /**
+   * Main entry-point for the basic CLI to the server.
+   *
+   * @param args Additional arguments, does nothing.
+   */
+  public static void main(String[] args) {
     Server server = new Server();
     server.run();
   }
@@ -48,8 +50,29 @@ public class Server {
 
   private void processInput(String cmd) {
     cmd = cmd.trim().toUpperCase();
-
     String[] parts =  cmd.split(" ");
+
+    switch (parts[0]) {
+      case "BID", "ASK":
+        createNewOrder(parts);
+        break;
+
+      case "PRINT":
+        getLevelOneData();
+        break;
+    }
+  }
+  private void getLevelOneData() {
+    OrderBook orderBook = matchingEngine.getOrderBook();
+    String msg = String.format(
+        "Best Bid: %s | Best Ask: %s",
+        orderBook.isEmpty(Side.BID) ? "None" : orderBook.getBestBid().getPrice(),
+        orderBook.isEmpty(Side.ASK) ? "None" : orderBook.getBestAsk().getPrice()
+    );
+    System.out.println(msg);
+  }
+
+  private void createNewOrder(String[] parts) {
 
     Side side = Side.valueOf(parts[0]);
     Type type = Type.valueOf(parts[1]);
