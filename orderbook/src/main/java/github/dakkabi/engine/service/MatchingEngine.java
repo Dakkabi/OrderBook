@@ -57,6 +57,7 @@ public class MatchingEngine {
     switch (order.getType()) {
       case MARKET:
         // Market Orders get cancelled if not filled.
+        logger.onOrderRemoved(order);
         break;
 
       case LIMIT:
