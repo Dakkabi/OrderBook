@@ -5,18 +5,23 @@ import github.dakkabi.engine.model.Order;
 import github.dakkabi.engine.model.Side;
 import github.dakkabi.engine.model.Type;
 import github.dakkabi.engine.service.MatchingEngine;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+/**
+ * Simple CLI that interacts directly with the server.
+ */
 public class Server {
-  private MatchingEngine matchingEngine = new MatchingEngine(MatchingAlgorithm.FIFO);
+  private final MatchingEngine matchingEngine = new MatchingEngine(MatchingAlgorithm.FIFO);
 
-  public static void main(String[] args) {
+  static void main(String[] args) {
     Server server = new Server();
     server.run();
   }
 
+  /**
+   * Main runnable.
+   */
   public void run() {
     System.out.println("Server starting");
     System.out.println("Example: BID LIMIT 500@56.54");
@@ -33,7 +38,7 @@ public class Server {
   private void handleUserInput() {
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
       String line;
-      while((line = reader.readLine()) != null) {
+      while ((line = reader.readLine()) != null) {
         processInput(line);
       }
     } catch (Exception e) {
