@@ -8,6 +8,7 @@ import java.time.Instant;
 public class Order {
   private int id;
   private final Side side;
+  private final Type type;
   private final int quantity;
   private final double price;
   private final long timestamp;
@@ -19,12 +20,13 @@ public class Order {
    * @param quantity The quantity the agent wants to sell / buy.
    * @param price The amount the agent would sell / buy for.
    */
-  public Order(Side side, int quantity, double price) {
+  public Order(Side side, Type type, int quantity, double price) {
     if (quantity <= 0) {
       throw new IllegalArgumentException("quantity must be greater than 0");
     }
 
     this.side = side;
+    this.type = type;
     this.quantity = quantity;
     this.price = price;
     this.timestamp = Instant.now().getNano();
@@ -40,6 +42,10 @@ public class Order {
 
   public Side getSide() {
     return side;
+  }
+
+  public Type getType() {
+    return type;
   }
 
   public int getQuantity() {
