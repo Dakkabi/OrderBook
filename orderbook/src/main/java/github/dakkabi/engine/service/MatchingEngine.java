@@ -28,6 +28,11 @@ public class MatchingEngine {
    */
   public MatchingEngine(OrderBook orderBook,  MatchingAlgorithm algorithm) {
     this.orderBook = orderBook;
+
+    if (algorithm.equals(MatchingAlgorithm.PRORATA)) {
+      throw new UnsupportedOperationException("PRO-RATA is not currently supported");
+    }
+
     this.algorithm = algorithm;
   }
 
