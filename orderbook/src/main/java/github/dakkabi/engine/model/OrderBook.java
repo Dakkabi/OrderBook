@@ -43,6 +43,35 @@ public class OrderBook {
     return order;
   }
 
+  /**
+   * Remove an order instance from the heaps.
+   *
+   * @param order The order to be removed.
+   * @return A bool on whether the operation was successful.
+   */
+  public boolean removeOrder(Order order) {
+    PriorityQueue<Order> sideQueue = order.getSide().equals(Side.ASK) ? askOrders : bidOrders;
+    return removeFromHeap(order, sideQueue);
+  }
+
+  private boolean removeFromHeap(Order order, PriorityQueue<Order> sideQueue) {
+    if (sideQueue.isEmpty()) {
+      return false;
+    }
+
+    if (sideQueue.peek().equals(order)) {
+      sideQueue.poll(); // O(1)
+      return true;
+    }
+    return sideQueue.remove(order); // O(n)
+  }
+
+  /**
+   * Check if the corresponding side queue is empty.
+   *
+   * @param side The side to check.
+   * @return A bool on whether the side is empty or not.
+   */
   public boolean isEmpty(Side side) {
     return side.equals(Side.ASK) ?  askOrders.isEmpty() : bidOrders.isEmpty();
   }
