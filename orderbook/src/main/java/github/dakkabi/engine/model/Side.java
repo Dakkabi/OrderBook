@@ -5,5 +5,9 @@ package github.dakkabi.engine.model;
  */
 public enum Side {
   BID,
-  ASK
+  ASK;
+
+  public Side other() {
+    return this.equals(BID) ? ASK : BID;
+  }
 }
