@@ -1,9 +1,7 @@
 package github.dakkabi.engine.service;
 
-import github.dakkabi.engine.model.MatchingAlgorithm;
 import github.dakkabi.engine.model.Order;
 import github.dakkabi.engine.model.OrderBook;
-import github.dakkabi.engine.model.Type;
 
 /**
  * Service class to handle the matching logic for incoming orders and trades
@@ -13,15 +11,11 @@ public class MatchingEngine {
   private final OrderBook orderBook;
   private final MatchingEngineLogger logger;
 
-  // Real-world order books rarely change algorithm during run-time.
-  // So keeping this final is fine.
-  private final MatchingAlgorithm algorithm;
-
   /**
    * Public algorithm-only argument, will initialise its own new Order Book.
    */
-  public MatchingEngine(MatchingAlgorithm algorithm) {
-    this(new OrderBook(),  algorithm);
+  public MatchingEngine() {
+    this(new OrderBook());
   }
 
   /**
@@ -29,15 +23,9 @@ public class MatchingEngine {
    *
    * @param orderBook The order book to manage.
    */
-  public MatchingEngine(OrderBook orderBook,  MatchingAlgorithm algorithm) {
+  public MatchingEngine(OrderBook orderBook) {
     this.orderBook = orderBook;
     this.logger = new MatchingEngineLogger();
-
-    if (algorithm.equals(MatchingAlgorithm.PRORATA)) {
-      throw new UnsupportedOperationException("PRO-RATA is not currently supported");
-    }
-
-    this.algorithm = algorithm;
   }
 
   /**
@@ -79,9 +67,5 @@ public class MatchingEngine {
 
   public OrderBook getOrderBook() {
     return orderBook;
-  }
-
-  public MatchingAlgorithm getAlgorithm() {
-    return algorithm;
   }
 }

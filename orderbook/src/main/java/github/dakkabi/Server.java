@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
  * Simple CLI that interacts directly with the server.
  */
 public class Server {
-  private final MatchingEngine matchingEngine = new MatchingEngine(MatchingAlgorithm.FIFO);
+  private final MatchingEngine matchingEngine = new MatchingEngine();
 
   /**
    * Main entry-point for the basic CLI to the server.
