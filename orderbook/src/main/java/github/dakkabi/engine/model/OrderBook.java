@@ -104,4 +104,11 @@ public class OrderBook {
   public Order getBestAsk() {
     return askOrders.firstEntry().getValue().peek();
   }
+
+  public Order getBestOrderBySide(Side side) {
+    if (side ==  Side.ASK) {
+      return getBestAsk();
+    }
+    return getBestBid();
+  }
 }
