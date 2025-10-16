@@ -2,6 +2,8 @@ package github.dakkabi.engine.service;
 
 import github.dakkabi.engine.model.Order;
 import github.dakkabi.engine.model.OrderBook;
+import github.dakkabi.engine.model.Side;
+import github.dakkabi.engine.model.Type;
 
 /**
  * Service class to handle the matching logic for incoming orders and trades
@@ -38,6 +40,7 @@ public class MatchingEngine {
   public Order submitOrder(Order order) {
     if (matchOrder(order)) {
       // Order was able to be immediately completed.
+      logger.onOrderRemoved(order);
       return order;
     }
 
@@ -61,8 +64,54 @@ public class MatchingEngine {
   }
 
   private boolean matchOrder(Order order) {
-    // TODO: Implement Matching FIFO
+    Side opposingSide = order.getSide().other();
+
+    if (orderBook.isEmpty(opposingSide)) {
+      return false;
+    }
+
+    Order bestOrder;
+    while ((bestOrder = orderBook.getBestOrderBySide(opposingSide)) != null) {
+      if (canMatchOrder(order, bestOrder)) {
+        commitTransaction(order, bestOrder);
+
+        if (bestOrder.completed()) {
+          orderBook.removeOrder(bestOrder);
+        }
+
+        if (order.completed()) {
+          return true;
+        }
+
+      } else {
+        // Can't match, abort.
+        break;
+      }
+    }
+
     return false;
+  }
+
+  private boolean canMatchOrder(Order incomingOrder, Order existingOrder) {
+    if (incomingOrder.getSide() == existingOrder.getSide()) {
+      throw new IllegalArgumentException("Cannot match two orders of the same Side");
+    }
+
+    if (incomingOrder.getType() == Type.MARKET) {
+      return true; // Market orders can always be matched.
+    }
+
+    // Limit order checks.
+    if (incomingOrder.getSide() == Side.BID) {
+      return incomingOrder.getPrice() >= existingOrder.getPrice();
+    }
+    return incomingOrder.getPrice() <= existingOrder.getPrice();
+  }
+
+  private void commitTransaction(Order order, Order otherOrder) {
+    int safeQuantityTransferAmount = Math.min(order.getRemainingQuantity(), otherOrder.getRemainingQuantity());
+    order.setRemainingQuantity(order.getRemainingQuantity() - safeQuantityTransferAmount);
+    otherOrder.setRemainingQuantity(otherOrder.getRemainingQuantity() - safeQuantityTransferAmount);
   }
 
   public OrderBook getOrderBook() {
