@@ -1,6 +1,9 @@
 package github.dakkabi;
 
-import github.dakkabi.engine.model.*;
+import github.dakkabi.engine.model.Order;
+import github.dakkabi.engine.model.OrderBook;
+import github.dakkabi.engine.model.Side;
+import github.dakkabi.engine.model.Type;
 import github.dakkabi.engine.service.MatchingEngine;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -60,8 +63,13 @@ public class Server {
       case "PRINT":
         getLevelOneData();
         break;
+
+      default:
+        System.out.println("Unknown command");
+        break;
     }
   }
+
   private void getLevelOneData() {
     OrderBook orderBook = matchingEngine.getOrderBook();
     String msg = String.format(
