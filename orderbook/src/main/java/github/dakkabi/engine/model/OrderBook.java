@@ -16,7 +16,9 @@ public class OrderBook {
   // a price level.
   // Hashmap is a good alternative, but they do not keep sorted price levels, making traversing the
   // K-depths of an order-book O(n) rather than O(log(n))
-  private final TreeMap<Double, ArrayDeque<Order>> bidOrders = new TreeMap<>(Collections.reverseOrder());
+  private final TreeMap<Double, ArrayDeque<Order>> bidOrders = new TreeMap<>(
+      Collections.reverseOrder()
+  );
   private final TreeMap<Double, ArrayDeque<Order>> askOrders = new TreeMap<>();
 
 
@@ -31,7 +33,7 @@ public class OrderBook {
     order.setId(nextOrderId.getAndIncrement());
 
     if (order.getSide() == Side.ASK) {
-       addToMap(order, askOrders);
+      addToMap(order, askOrders);
     } else {
       addToMap(order, bidOrders);
     }
@@ -93,10 +95,16 @@ public class OrderBook {
    * @return A bool on whether the side is empty or not.
    */
   public boolean isEmpty(Side side) {
-      return side.equals(Side.ASK) ?  askOrders.isEmpty() : bidOrders.isEmpty();
+    return side.equals(Side.ASK) ?  askOrders.isEmpty() : bidOrders.isEmpty();
   }
 
   // Level 1 Order Book data
+
+  /**
+   * Return the best order in the BID queue at the best price level.
+   *
+   * @return The best BID order instance, null if it doesn't exist.
+   */
   public Order getBestBid() {
     var bestPriceLevel = bidOrders.firstEntry();
     if (bestPriceLevel == null) {
@@ -105,6 +113,11 @@ public class OrderBook {
     return bestPriceLevel.getValue().peek();
   }
 
+  /**
+   * Return the best order in the ASK queue at the best price level.
+   *
+   * @return The best ASK order instance, null if it doesn't exist.
+   */
   public Order getBestAsk() {
     var bestPriceLevel = askOrders.firstEntry();
     if (bestPriceLevel == null) {
@@ -113,6 +126,12 @@ public class OrderBook {
     return bestPriceLevel.getValue().peek();
   }
 
+  /**
+   * Get the best order from either queue, depending on side argument.
+   *
+   * @param side The side map to lookup.
+   * @return The best order instance, null if it doesn't exist.
+   */
   public Order getBestOrderBySide(Side side) {
     if (side ==  Side.ASK) {
       return getBestAsk();
