@@ -63,6 +63,12 @@ public class MatchingEngine {
     return order;
   }
 
+  /**
+   * Attempt to match the incoming order immediately.
+   *
+   * @param order The order to be filled.
+   * @return A boolean on whether the order was able to be filled or not.
+   */
   private boolean matchOrder(Order order) {
     Side opposingSide = order.getSide().other();
 
@@ -92,6 +98,13 @@ public class MatchingEngine {
     return false;
   }
 
+  /**
+   * Check if two orders are able to initiate a transaction.
+   *
+   * @param incomingOrder The order intending to trade.
+   * @param existingOrder The order opposite the trade.
+   * @return A boolean on whether the transaction can be initiated or not.
+   */
   private boolean canMatchOrder(Order incomingOrder, Order existingOrder) {
     if (incomingOrder.getSide() == existingOrder.getSide()) {
       throw new IllegalArgumentException("Cannot match two orders of the same Side");
@@ -108,8 +121,17 @@ public class MatchingEngine {
     return incomingOrder.getPrice() <= existingOrder.getPrice();
   }
 
+  /**
+   * Transact the quantity between orders, simulating the buying and selling of a symbol.
+   *
+   * @param order An order in the transaction.
+   * @param otherOrder The opposing order in the transaction.
+   */
   private void commitTransaction(Order order, Order otherOrder) {
-    int safeQuantityTransferAmount = Math.min(order.getRemainingQuantity(), otherOrder.getRemainingQuantity());
+    int safeQuantityTransferAmount = Math.min(
+        order.getRemainingQuantity(),
+        otherOrder.getRemainingQuantity()
+    );
     order.setRemainingQuantity(order.getRemainingQuantity() - safeQuantityTransferAmount);
     otherOrder.setRemainingQuantity(otherOrder.getRemainingQuantity() - safeQuantityTransferAmount);
   }
