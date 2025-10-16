@@ -98,11 +98,19 @@ public class OrderBook {
 
   // Level 1 Order Book data
   public Order getBestBid() {
-    return bidOrders.firstEntry().getValue().peek();
+    var bestPriceLevel = bidOrders.firstEntry();
+    if (bestPriceLevel == null) {
+      return null;
+    }
+    return bestPriceLevel.getValue().peek();
   }
 
   public Order getBestAsk() {
-    return askOrders.firstEntry().getValue().peek();
+    var bestPriceLevel = askOrders.firstEntry();
+    if (bestPriceLevel == null) {
+      return null;
+    }
+    return bestPriceLevel.getValue().peek();
   }
 
   public Order getBestOrderBySide(Side side) {
