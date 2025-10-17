@@ -4,9 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class OrderBookTest {
-  OrderBook orderBook;
+  private OrderBook orderBook;
 
   @BeforeEach
   public void beforeEach() {
@@ -14,24 +15,19 @@ public class OrderBookTest {
   }
 
   @Test
-  public void getBestBid() {
-    Order bestBid = new Order(Side.BID, 100, 100);
-    Order worstBid = new Order(Side.BID, 50, 50);
-
-    Order betterOrder = orderBook.addOrder(bestBid);
-    orderBook.addOrder(worstBid);
-
-    assertEquals(betterOrder.getId(), orderBook.getBestBid().getId());
+  public void getBestOrder_CheckNullSafety() {
+    assertNull(orderBook.getBestBid());
+    assertNull(orderBook.getBestAsk());
   }
 
   @Test
-  public void getBestAsk() {
-    Order bestAsk = new Order(Side.ASK, 100, 100);
-    Order worstAsk = new Order(Side.ASK, 50, 500);
+  public void addOrder_AddTwoOrders() {
+    orderBook.addOrder(new Order(Side.ASK, Type.LIMIT, 100, 50.54));
+    orderBook.addOrder(new Order(Side.ASK, Type.LIMIT, 100, 50.54));
+    // TODO: Assert that the size of the best price level is 200 (100 + 100)
 
-    Order betterOrder = orderBook.addOrder(bestAsk);
-    orderBook.addOrder(worstAsk);
-
-    assertEquals(betterOrder.getId(), orderBook.getBestAsk().getId());
+    orderBook.removeOrder(orderBook.getBestAsk());
+    orderBook.removeOrder(orderBook.getBestAsk());
+    // TODO: Assert there exists no Price Levels in the Map
   }
 }

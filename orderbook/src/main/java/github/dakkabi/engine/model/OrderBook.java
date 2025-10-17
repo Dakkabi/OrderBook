@@ -1,7 +1,9 @@
 package github.dakkabi.engine.model;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -10,20 +12,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OrderBook {
   private final AtomicInteger nextOrderId = new AtomicInteger(0);
 
-  // Java uses heaps data structures for priority queues.
-  private final PriorityQueue<Order> bidOrders;
-  private final PriorityQueue<Order> askOrders;
+  // Red-Black tree implementation, all operations are O(log(n)) but allows to hold all orders of
+  // a price level.
+  // Hashmap is a good alternative, but they do not keep sorted price levels, making traversing the
+  // K-depths of an order-book O(n) rather than O(log(n))
+  private final TreeMap<Double, ArrayDeque<Order>> bidOrders = new TreeMap<>(
+      Collections.reverseOrder()
+  );
+  private final TreeMap<Double, ArrayDeque<Order>> askOrders = new TreeMap<>();
 
-  /**
-   * Public OrderBook constructor, initialises the bidOrders and askOrders
-   * with a Comparator type.
-   */
-  public OrderBook() {
-    Comparator<Order> getSmallerPrice = Comparator.comparingDouble(Order::getPrice);
 
-    bidOrders = new PriorityQueue<>(getSmallerPrice.reversed());
-    askOrders = new PriorityQueue<>(getSmallerPrice);
-  }
 
   /**
    * Add an order into the Order Book.
@@ -34,21 +32,110 @@ public class OrderBook {
   public Order addOrder(Order order) {
     order.setId(nextOrderId.getAndIncrement());
 
-    if (order.getSide().equals(Side.BID)) {
-      bidOrders.add(order);
+    if (order.getSide() == Side.ASK) {
+      addToMap(order, askOrders);
     } else {
-      askOrders.add(order);
+      addToMap(order, bidOrders);
     }
-
     return order;
   }
 
-  // Level 1 Order Book data
-  public Order getBestBid() {
-    return bidOrders.peek();
+  /**
+   * Helper function for adding an order to a price level in the TreeMap.
+   *
+   * @param order The order to be added.
+   * @param sideMap The side map to be added to.
+   */
+  private void addToMap(Order order, TreeMap<Double, ArrayDeque<Order>> sideMap) {
+    if (!sideMap.containsKey(order.getPrice())) {
+      sideMap.put(order.getPrice(), new ArrayDeque<>());
+    }
+    sideMap.get(order.getPrice()).add(order);
   }
 
+  /**
+   * Remove an order instance from the heaps.
+   *
+   * @param order The order to be removed.
+   * @return A bool on whether the operation was successful.
+   */
+  public boolean removeOrder(Order order) {
+    if (order.getSide() ==  Side.BID) {
+      return removeFromMap(order, bidOrders);
+    }
+    return removeFromMap(order, askOrders);
+  }
+
+  /**
+   * Helper function to remove an order from a Queue in the Side Tree Map.
+   *
+   * @param order The order to be removed.
+   * @param sideMap The side map to search through.
+   * @return A boolean on whether the operation was successful.
+   */
+  private boolean removeFromMap(Order order, TreeMap<Double, ArrayDeque<Order>> sideMap) {
+    // We can always assume getting the best ask / bid will be O(1)
+    // TreeMap will keep the best price at the root;
+    // Queue will keep the earliest order in the front.
+
+    Deque<Order> orders = sideMap.get(order.getPrice());
+    boolean result = orders.remove(order);
+
+    if (orders.isEmpty()) {
+      sideMap.remove(order.getPrice());
+    }
+
+    return result;
+  }
+
+  /**
+   * Check if the corresponding side queue is empty.
+   *
+   * @param side The side to check.
+   * @return A bool on whether the side is empty or not.
+   */
+  public boolean isEmpty(Side side) {
+    return side.equals(Side.ASK) ?  askOrders.isEmpty() : bidOrders.isEmpty();
+  }
+
+  // Level 1 Order Book data
+
+  /**
+   * Return the best order in the BID queue at the best price level.
+   *
+   * @return The best BID order instance, null if it doesn't exist.
+   */
+  public Order getBestBid() {
+    var bestPriceLevel = bidOrders.firstEntry();
+    if (bestPriceLevel == null) {
+      return null;
+    }
+    return bestPriceLevel.getValue().peek();
+  }
+
+  /**
+   * Return the best order in the ASK queue at the best price level.
+   *
+   * @return The best ASK order instance, null if it doesn't exist.
+   */
   public Order getBestAsk() {
-    return askOrders.peek();
+    var bestPriceLevel = askOrders.firstEntry();
+    if (bestPriceLevel == null) {
+      return null;
+    }
+    return bestPriceLevel.getValue().peek();
+  }
+
+  /**
+   * Get the best order from either queue, depending on side argument.
+   *
+   * @param side The side map to lookup.
+   * @return The best order instance, null if it doesn't exist.
+   */
+  public Order getBestOrderBySide(Side side) {
+    if (side ==  Side.ASK) {
+      return getBestAsk();
+    }
+    return getBestBid();
   }
 }
